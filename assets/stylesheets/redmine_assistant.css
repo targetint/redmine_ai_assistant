@@ -25,16 +25,9 @@
   margin-bottom: 0.5em;
 }
 
-.redmine-assistant-toggle {
-  text-decoration: none;
-}
-
-.redmine-assistant-collapsible {
+.redmine-assistant-summary-body {
   border-top: 1px solid #ddd;
-  max-height: 0;
-  overflow: hidden;
   padding-top: 0.75em;
-  transition: max-height 0.2s ease;
 }
 
 .redmine-assistant-summary-meta {
