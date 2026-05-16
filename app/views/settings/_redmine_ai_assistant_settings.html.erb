@@ -1,0 +1,69 @@
+<p>
+  <%= label_tag 'settings[enabled]', l(:label_redmine_assistant_enabled) %>
+  <%= hidden_field_tag 'settings[enabled]', '0' %>
+  <%= check_box_tag 'settings[enabled]', '1', @settings['enabled'].to_s == '1' %>
+</p>
+
+<p>
+  <%= label_tag 'settings[openwebui_base_url]', l(:label_redmine_assistant_openwebui_base_url) %>
+  <%= text_field_tag 'settings[openwebui_base_url]', @settings['openwebui_base_url'], :size => 60, :placeholder => 'https://example.com/openui' %>
+</p>
+
+<p>
+  <%= label_tag 'settings[openwebui_api_key]', l(:label_redmine_assistant_openwebui_api_key) %>
+  <%= password_field_tag 'settings[openwebui_api_key]', '', :size => 60, :autocomplete => 'new-password', :placeholder => (@settings['openwebui_api_key'].present? ? l(:label_redmine_assistant_api_key_configured) : '') %>
+  <% if @settings['openwebui_api_key'].present? %>
+    <em class="info"><%= l(:text_redmine_assistant_leave_api_key_blank) %></em>
+  <% end %>
+</p>
+
+<p>
+  <%= label_tag 'settings[default_chat_model]', l(:label_redmine_assistant_default_chat_model) %>
+  <%= text_field_tag 'settings[default_chat_model]', @settings['default_chat_model'], :size => 40 %>
+</p>
+
+<p>
+  <%= label_tag 'settings[embedding_model]', l(:label_redmine_assistant_embedding_model) %>
+  <%= text_field_tag 'settings[embedding_model]', @settings['embedding_model'], :size => 40 %>
+</p>
+
+<p>
+  <%= label_tag 'settings[chat_provider]', l(:label_redmine_assistant_chat_provider) %>
+  <%= select_tag 'settings[chat_provider]',
+                 options_for_select([[l(:label_redmine_assistant_chat_provider_openwebui), 'openwebui'], [l(:label_redmine_assistant_chat_provider_ollama), 'ollama']], @settings['chat_provider']) %>
+</p>
+
+<p>
+  <%= label_tag 'settings[ollama_base_url]', l(:label_redmine_assistant_ollama_base_url) %>
+  <%= text_field_tag 'settings[ollama_base_url]', @settings['ollama_base_url'], :size => 60, :placeholder => 'http://localhost:11434' %>
+</p>
+
+<p>
+  <%= label_tag 'settings[issue_summary_enabled]', l(:label_redmine_assistant_issue_summary_enabled) %>
+  <%= hidden_field_tag 'settings[issue_summary_enabled]', '0' %>
+  <%= check_box_tag 'settings[issue_summary_enabled]', '1', @settings['issue_summary_enabled'].to_s == '1' %>
+</p>
+
+<p>
+  <%= label_tag 'settings[issue_summary_system_prompt]', l(:label_redmine_assistant_issue_summary_system_prompt) %>
+  <%= text_area_tag 'settings[issue_summary_system_prompt]', @settings['issue_summary_system_prompt'], :rows => 14, :style => 'width: 95%;' %>
+</p>
+
+<p>
+  <%= label_tag 'settings[issue_summary_user_prompt]', l(:label_redmine_assistant_issue_summary_user_prompt) %>
+  <%= text_area_tag 'settings[issue_summary_user_prompt]', @settings['issue_summary_user_prompt'], :rows => 6, :style => 'width: 95%;' %>
+  <em class="info"><%= l(:text_redmine_assistant_issue_summary_prompt_placeholder) %></em>
+</p>
+
+<p>
+  <%= label_tag 'settings[run_in_background]', l(:label_redmine_assistant_run_in_background) %>
+  <%= hidden_field_tag 'settings[run_in_background]', '0' %>
+  <%= check_box_tag 'settings[run_in_background]', '1', @settings['run_in_background'].to_s == '1' %>
+</p>
+
+<p>
+  <%= label_tag 'settings[issue_chunk_size]', l(:label_redmine_assistant_issue_chunk_size) %>
+  <%= number_field_tag 'settings[issue_chunk_size]', @settings['issue_chunk_size'], :min => 10, :max => 1000 %>
+</p>
+
+<p class="info"><%= l(:text_redmine_assistant_endpoint_note) %></p>

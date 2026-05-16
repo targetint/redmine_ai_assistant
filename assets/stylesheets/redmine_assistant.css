@@ -1,0 +1,48 @@
+.redmine-assistant-sync-box .redmine-assistant-status span {
+  margin-left: 0.35em;
+}
+
+.redmine-assistant-success {
+  color: #008000;
+  font-weight: bold;
+}
+
+.redmine-assistant-running {
+  color: #b36b00;
+  font-weight: bold;
+}
+
+.redmine-assistant-failed {
+  color: #b00020;
+  font-weight: bold;
+}
+
+.redmine-assistant-sync-form {
+  margin-top: 1em;
+}
+
+.redmine-assistant-ticket-summary h3 {
+  margin-bottom: 0.5em;
+}
+
+.redmine-assistant-toggle {
+  text-decoration: none;
+}
+
+.redmine-assistant-collapsible {
+  border-top: 1px solid #ddd;
+  max-height: 0;
+  overflow: hidden;
+  padding-top: 0.75em;
+  transition: max-height 0.2s ease;
+}
+
+.redmine-assistant-summary-meta {
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 0;
+}
+
+.redmine-assistant-summary-form {
+  display: inline;
+}

@@ -1,0 +1,43 @@
+<% project ||= @project %>
+<% mapping = RedmineAssistantProject.where(:project_id => project.id).first %>
+<% allowed = RedmineAssistant.enabled? && RedmineAssistant.project_enabled?(project) && User.current.allowed_to?(:sync_redmine_assistant, project) %>
+
+<% if allowed %>
+  <% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'redmine_assistant', :plugin => 'redmine_ai_assistant' %>
+    <%= javascript_include_tag 'redmine_assistant', :plugin => 'redmine_ai_assistant' %>
+  <% end %>
+
+  <div class="box redmine-assistant-sync-box">
+    <h3><%= l(:label_redmine_assistant_knowledge_base) %></h3>
+    <p class="redmine-assistant-status">
+      <strong><%= l(:label_redmine_assistant_sync_status) %>:</strong>
+      <% if mapping.nil? || mapping.sync_status.blank? %>
+        <span><%= l(:label_redmine_assistant_not_synced) %></span>
+      <% elsif mapping.sync_status == 'success' %>
+        <span class="redmine-assistant-success"><%= l(:label_redmine_assistant_success) %></span>
+        <% if mapping.last_synced_at %>
+          <span><%= format_time(mapping.last_synced_at) %></span>
+        <% end %>
+      <% elsif mapping.sync_status == 'running' %>
+        <span class="redmine-assistant-running"><%= l(:label_redmine_assistant_running) %></span>
+      <% elsif mapping.sync_status == 'failed' %>
+        <span class="redmine-assistant-failed"><%= l(:label_redmine_assistant_failed) %></span>
+        <% if mapping.sync_message.present? %>
+          <span><%= h(mapping.sync_message) %></span>
+        <% end %>
+      <% end %>
+    </p>
+
+    <% if mapping && mapping.openwebui_knowledge_name.present? %>
+      <p>
+        <strong><%= l(:label_redmine_assistant_knowledge_name) %>:</strong>
+        <%= h(mapping.openwebui_knowledge_name) %>
+      </p>
+    <% end %>
+
+    <%= form_tag project_redmine_ai_assistant_sync_path(project), :method => :post, :class => 'redmine-assistant-sync-form' do %>
+      <%= submit_tag l(:button_redmine_assistant_sync), :class => 'button-positive' %>
+    <% end %>
+  </div>
+<% end %>

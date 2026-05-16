@@ -1,0 +1,71 @@
+<% issue = local_assigns[:issue] || @issue %>
+<% if issue && RedmineAssistant.issue_summary_enabled? && RedmineAssistant.project_enabled?(issue.project) %>
+  <% summary = RedmineAssistantIssueSummary.latest_for(issue) %>
+  <% if summary.nil? %>
+    <% summary = RedmineAssistantIssueSummary.enqueue_for(issue, User.current) %>
+    <% RedmineAssistantIssueSummaryJob.perform_later(issue.id, User.current.id, summary.id) %>
+  <% end %>
+  <% body_id = "redmine-assistant-ticket-summary-body-#{issue.id}" %>
+
+  <% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'redmine_assistant', :plugin => 'redmine_ai_assistant' %>
+    <%= javascript_include_tag 'redmine_assistant', :plugin => 'redmine_ai_assistant' %>
+  <% end %>
+
+  <div class="redmine-assistant-ticket-summary box">
+    <h3>
+      <a href="#"
+         class="redmine-assistant-toggle"
+         data-target="<%= body_id %>"
+         onclick="var target=document.getElementById('<%= body_id %>'); if(target){ if(target.style.display==='none'||target.style.display===''){ target.style.display='block'; target.style.maxHeight=target.scrollHeight+'px'; } else { target.style.maxHeight='0px'; setTimeout(function(){ target.style.display='none'; },220); } } return false;">
+        <%= l(:label_redmine_assistant_ticket_summary) %>
+      </a>
+    </h3>
+
+    <div id="<%= body_id %>" class="redmine-assistant-collapsible" style="display: none;">
+      <% if summary && summary.status == 'success' && summary.summary.present? %>
+        <div class="wiki">
+          <%= simple_format(h(summary.summary)) %>
+        </div>
+        <p class="redmine-assistant-summary-meta">
+          <%= l(:label_redmine_assistant_summary_version) %> <%= summary.version %>
+          <% if summary.generated_at %>
+            | <%= format_time(summary.generated_at) %>
+          <% end %>
+          <% if summary.respond_to?(:ai_model_name) && summary.ai_model_name.present? %>
+            | <%= h(summary.ai_model_name) %>
+          <% end %>
+        </p>
+      <% elsif summary && summary.status == 'failed' %>
+        <p class="redmine-assistant-failed">
+          <%= l(:label_redmine_assistant_summary_failed) %>: <%= h(summary.error_message) %>
+        </p>
+        <p class="redmine-assistant-summary-meta">
+          <%= l(:label_redmine_assistant_summary_version) %> <%= summary.version %>
+          <% if summary.generated_at %>
+            | <%= format_time(summary.generated_at) %>
+          <% end %>
+        </p>
+      <% elsif summary && %w[queued running].include?(summary.status) %>
+        <p><%= l(:label_redmine_assistant_summary_generating) %></p>
+        <p class="redmine-assistant-summary-meta">
+          <%= l(:label_redmine_assistant_summary_version) %> <%= summary.version %>
+          <% if summary.generated_at %>
+            | <%= format_time(summary.generated_at) %>
+          <% end %>
+        </p>
+      <% elsif summary %>
+        <p class="redmine-assistant-failed"><%= l(:label_redmine_assistant_summary_empty) %></p>
+        <p class="redmine-assistant-summary-meta">
+          <%= l(:label_redmine_assistant_summary_version) %> <%= summary.version %>
+          <% if summary.generated_at %>
+            | <%= format_time(summary.generated_at) %>
+          <% end %>
+        </p>
+      <% else %>
+        <p><%= l(:label_redmine_assistant_summary_pending) %></p>
+        <p><%= l(:text_redmine_assistant_summary_generate_hint) %></p>
+      <% end %>
+    </div>
+  </div>
+<% end %>
