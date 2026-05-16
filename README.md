@@ -4,7 +4,7 @@ Redmine AI Assistant adds AI assistant features to Redmine. The first module syn
 
 ## Compatibility
 
-Supports Redmine 6.x.
+Designed for Redmine 4.x, 5.x, and 6.x and their Rails versions. The migration uses Rails 4.2 migration syntax and the code avoids Rails 7-only APIs.
 
 ## Features
 
@@ -37,6 +37,28 @@ Supports Redmine 6.x.
 
 5. Grant the `Sync AI Knowledgebase` permission to the desired roles, normally Manager.
 
+## Uninstall
+
+1. Disable the **Redmine AI Assistant** module in projects that use it.
+
+2. Roll back the plugin migrations:
+
+   ```sh
+   bundle exec rake redmine:plugins:migrate NAME=redmine_ai_assistant VERSION=0 RAILS_ENV=production
+   ```
+
+   This removes the plugin database tables and stored sync/summary records.
+
+3. Remove the plugin directory:
+
+   ```sh
+   rm -rf plugins/redmine_ai_assistant
+   ```
+
+4. Restart Redmine.
+
+If this plugin was previously installed under the old folder/name `redmine_ai_assistant`, make sure that old directory is also removed before restarting Redmine.
+
 ## Settings
 
 Open **Administration -> Plugins -> Redmine AI Assistant -> Configure**.
@@ -52,7 +74,7 @@ Open **Administration -> Plugins -> Redmine AI Assistant -> Configure**.
 - **Run sync in background**: uses ActiveJob when queue workers are configured.
 - **Issue chunk size**: number of issues per uploaded text file.
 
-The Ruby namespace and database tables intentionally remain `RedmineAssistant` / `redmine_assistant_*` for compatibility with existing data.
+The Ruby namespace and database tables intentionally remain `RedmineAssistant` / `redmine_ai_assistant_*` for compatibility with existing data.
 
 ## OpenWebUI API Key
 
@@ -112,11 +134,11 @@ Current defaults:
 - `POST /api/v1/files/`
 - `POST /api/v1/knowledge/:id/file/add`
 
-If your OpenWebUI version uses different paths, update the constants in `app/services/redmine_assistant/openwebui_client.rb`.
+If your OpenWebUI version uses different paths, update the constants in `app/services/redmine_ai_assistant/openwebui_client.rb`.
 
 ## Security
 
-- Users must have `:sync_redmine_assistant` on the project.
+- Users must have `:sync_redmine_ai_assistant` on the project.
 - Export respects normal Redmine project permissions for issues, wiki, and news.
 - API keys, tokens, secrets, and password-like values are filtered from exported text where they match common patterns.
 - The plugin logs project IDs, Knowledgebase names/IDs, upload filenames, and errors. It does not log API keys or full exported content.
@@ -129,7 +151,3 @@ If your OpenWebUI version uses different paths, update the constants in `app/ser
 - **404 from OpenWebUI**: your OpenWebUI version may use different API paths; adjust the constants in `OpenwebuiClient`.
 - **Background sync does not run**: disable background sync or configure an ActiveJob queue worker for your Redmine deployment.
 - **Large projects time out**: reduce issue chunk size or enable background sync.
-
-## Compatibility
-
-Designed for Redmine 4.x, 5.x, and 6.x and their Rails versions. The migration uses Rails 4.2 migration syntax and the code avoids Rails 7-only APIs.
