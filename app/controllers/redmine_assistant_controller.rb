@@ -44,11 +44,12 @@ class RedmineAssistantController < ApplicationController
       return respond_with_issue_summary_error(l(:error_redmine_assistant_summary_disabled))
     end
 
+    summary = RedmineAssistantIssueSummary.enqueue_new_version_for(@issue, User.current)
     if RedmineAssistant.run_in_background? && defined?(RedmineAssistantIssueSummaryJob)
-      RedmineAssistantIssueSummaryJob.perform_later(@issue.id, User.current.id)
+      RedmineAssistantIssueSummaryJob.perform_later(@issue.id, User.current.id, summary.id)
       respond_with_issue_summary_success(l(:notice_redmine_assistant_summary_queued))
     else
-      summary = RedmineAssistant::IssueSummarizer.new.summarize(@issue, User.current)
+      summary = RedmineAssistant::IssueSummarizer.new.summarize(@issue, User.current, :summary_record => summary)
       if summary && summary.status == 'failed'
         respond_with_issue_summary_error(summary.error_message)
       else

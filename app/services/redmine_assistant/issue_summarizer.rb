@@ -120,6 +120,9 @@ module RedmineAssistant
           :generated_at => Time.now
         }
         attributes[:ai_model_name] = ai_model_name if RedmineAssistantIssueSummary.ai_model_name_column?
+        if RedmineAssistantIssueSummary.retry_count_column?
+          attributes[:retry_count] = status == 'failed' ? summary_record.retry_count_value + 1 : 0
+        end
         summary_record.update!(attributes)
         return summary_record
       end
@@ -133,9 +136,11 @@ module RedmineAssistant
           :summary => summary_text,
           :status => status,
           :error_message => error_message,
+          :retry_count => status == 'failed' ? 1 : 0,
           :generated_by_id => user && user.id,
           :generated_at => Time.now
         }
+        attributes.delete(:retry_count) unless RedmineAssistantIssueSummary.retry_count_column?
         attributes[:ai_model_name] = ai_model_name if RedmineAssistantIssueSummary.ai_model_name_column?
 
         RedmineAssistantIssueSummary.create!(attributes)

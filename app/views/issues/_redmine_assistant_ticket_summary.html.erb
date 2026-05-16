@@ -4,6 +4,9 @@
   <% if summary.nil? %>
     <% summary = RedmineAssistantIssueSummary.enqueue_for(issue, User.current) %>
     <% RedmineAssistantIssueSummaryJob.perform_later(issue.id, User.current.id, summary.id) %>
+  <% elsif summary.retryable? %>
+    <% summary = RedmineAssistantIssueSummary.enqueue_failed_retry_for(issue, User.current) %>
+    <% RedmineAssistantIssueSummaryJob.perform_later(issue.id, User.current.id, summary.id) if summary %>
   <% end %>
   <% body_id = "redmine-assistant-ticket-summary-body-#{issue.id}" %>
 
@@ -33,6 +36,14 @@
         <p class="redmine-assistant-failed">
           <%= l(:label_redmine_assistant_summary_failed) %>: <%= h(summary.error_message) %>
         </p>
+        <% unless summary.retryable? %>
+          <p>
+            <%= button_to l(:button_redmine_assistant_regenerate_summary),
+                          issue_redmine_ai_assistant_summary_path(issue),
+                          :method => :post,
+                          :class => 'button' %>
+          </p>
+        <% end %>
         <p class="redmine-assistant-summary-meta">
           <%= l(:label_redmine_assistant_summary_version) %> <%= summary.version %>
           <% if summary.generated_at %>
