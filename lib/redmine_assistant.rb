@@ -112,7 +112,7 @@ module RedmineAssistant
   end
 
   def self.issue_summary_enabled?
-    enabled? && settings['issue_summary_enabled'].to_s == '1'
+    settings['issue_summary_enabled'].to_s == '1'
   end
 
   def self.issue_chunk_size

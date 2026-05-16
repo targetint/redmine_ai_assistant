@@ -13,16 +13,9 @@
   <% end %>
 
   <div class="redmine-assistant-ticket-summary box">
-    <h3>
-      <a href="#"
-         class="redmine-assistant-toggle"
-         data-target="<%= body_id %>"
-         onclick="var target=document.getElementById('<%= body_id %>'); if(target){ if(target.style.display==='none'||target.style.display===''){ target.style.display='block'; target.style.maxHeight=target.scrollHeight+'px'; } else { target.style.maxHeight='0px'; setTimeout(function(){ target.style.display='none'; },220); } } return false;">
-        <%= l(:label_redmine_assistant_ticket_summary) %>
-      </a>
-    </h3>
+    <h3><%= l(:label_redmine_assistant_ticket_summary) %></h3>
 
-    <div id="<%= body_id %>" class="redmine-assistant-collapsible" style="display: none;">
+    <div id="<%= body_id %>" class="redmine-assistant-summary-body">
       <% if summary && summary.status == 'success' && summary.summary.present? %>
         <div class="wiki">
           <%= simple_format(h(summary.summary)) %>
